@@ -35,52 +35,113 @@ if (phoneField) {
   phoneField.placeholder = "(000)-000-0000";
   phoneField.pattern = "^$|\\([0-9]{3}\\)-[0-9]{3}-[0-9]{4}$";
 
+function formatPhoneNumber(digits) {
+  digits = digits.replace(/\D/g, "").slice(0, 10);
+
+  if (digits.length === 0) return "";
+  if (digits.length <= 3) return `(${digits}`;
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 3)})-${digits.slice(3)}`;
+  }
+
+  return `(${digits.slice(0, 3)})-${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
 phoneField.addEventListener("input", event => {
   const input = event.target;
-  const oldValue = input.value;
-  const oldCursor = input.selectionStart;
 
-  // Count how many digits were before the cursor
-  const digitsBeforeCursor = oldValue
-    .slice(0, oldCursor)
-    .replace(/\D/g, "").length;
+  // Get only the numbers
+  const digits = input.value.replace(/\D/g, "").slice(0, 10);
 
-  // Remove everything except numbers and limit to 10 digits
-  const digits = oldValue.replace(/\D/g, "").slice(0, 10);
+  // Format the number
+  input.value = formatPhoneNumber(digits);
 
-  let formatted = "";
+  // Put cursor at the end after normal typing
+  input.setSelectionRange(input.value.length, input.value.length);
+});
 
-  if (digits.length > 0) {
-    formatted = `(${digits.slice(0, 3)}`;
+phoneField.addEventListener("keydown", event => {
+  const input = event.target;
 
-    if (digits.length >= 3) {
-      formatted += ")";
+  // Handle Backspace
+  if (event.key === "Backspace") {
+    const cursor = input.selectionStart;
+
+    // If cursor is immediately after a formatting character,
+    // skip over it and delete the digit before it.
+    if (
+      cursor > 0 &&
+      (input.value[cursor - 1] === ")" ||
+       input.value[cursor - 1] === "-" ||
+       input.value[cursor - 1] === "(")
+    ) {
+      event.preventDefault();
+
+      const digitsBefore = input.value
+        .slice(0, cursor)
+        .replace(/\D/g, "");
+
+      const newDigits = digitsBefore.slice(0, -1) +
+        input.value.slice(cursor).replace(/\D/g, "");
+
+      input.value = formatPhoneNumber(newDigits);
+
+      // Put cursor after the appropriate number of digits
+      const targetDigits = Math.max(0, digitsBefore.length - 1);
+      let newCursor = 0;
+      let count = 0;
+
+      while (newCursor < input.value.length && count < targetDigits) {
+        if (/\d/.test(input.value[newCursor])) {
+          count++;
+        }
+        newCursor++;
+      }
+
+      input.setSelectionRange(newCursor, newCursor);
     }
   }
 
-  if (digits.length > 3) {
-    formatted += `-${digits.slice(3, 6)}`;
-  }
+  // Handle Delete
+  if (event.key === "Delete") {
+    const cursor = input.selectionStart;
 
-  if (digits.length > 6) {
-    formatted += `-${digits.slice(6, 10)}`;
-  }
+    // If Delete is sitting directly before formatting,
+    // skip the formatting and delete the next digit.
+    if (
+      cursor < input.value.length &&
+      (input.value[cursor] === ")" ||
+       input.value[cursor] === "-")
+    ) {
+      event.preventDefault();
 
-  input.value = formatted;
+      const digits = input.value.replace(/\D/g, "");
 
-  // Find the new cursor position corresponding to the same digit
-  let newCursor = 0;
-  let digitCount = 0;
+      // Determine which digit is being deleted
+      const digitsBefore = input.value
+        .slice(0, cursor)
+        .replace(/\D/g, "").length;
 
-  while (newCursor < formatted.length && digitCount < digitsBeforeCursor) {
-    if (/\d/.test(formatted[newCursor])) {
-      digitCount++;
+      const newDigits =
+        digits.slice(0, digitsBefore) +
+        digits.slice(digitsBefore + 1);
+
+      input.value = formatPhoneNumber(newDigits);
+
+      // Restore cursor position
+      let newCursor = 0;
+      let count = 0;
+
+      while (newCursor < input.value.length && count < digitsBefore) {
+        if (/\d/.test(input.value[newCursor])) {
+          count++;
+        }
+        newCursor++;
+      }
+
+      input.setSelectionRange(newCursor, newCursor);
     }
-    newCursor++;
   }
-
-  // Put the cursor back in the correct position
-  input.setSelectionRange(newCursor, newCursor);
 });
 }
 
