@@ -68,6 +68,40 @@ if (timeField) {
   timeField.replaceWith(picker);
 }
 
+const phoneField = document.querySelector('input[name="phone"]');
+if (phoneField) {
+  phoneField.required = false;
+  phoneField.removeAttribute("required");
+  phoneField.maxLength = 14;
+  phoneField.inputMode = "numeric";
+  phoneField.autocomplete = "tel";
+  phoneField.placeholder = "(000)-000-0000";
+  phoneField.pattern = "^$|^\\(\\d{3}\\)-\\d{3}-\\d{4}$";
+
+  phoneField.addEventListener("input", event => {
+    const digits = (event.target.value || "").replace(/\D/g, "").slice(0, 10);
+
+    if (!digits.length) {
+      event.target.value = "";
+      return;
+    }
+
+    if (digits.length <= 3) {
+      event.target.value = `(${digits}`;
+      return;
+    }
+
+    if (digits.length <= 6) {
+      const tail = digits.slice(3);
+      event.target.value = `(${digits.slice(0, 3)})-${tail}`;
+      if (digits.length === 6) event.target.value += "-";
+      return;
+    }
+
+    event.target.value = `(${digits.slice(0, 3)})-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+  });
+}
+
 const form = document.querySelector(".quote-form");
 const status = document.querySelector(".form-status");
 
