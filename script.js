@@ -20,6 +20,14 @@ document.querySelectorAll(".mobile-nav a").forEach(link => {
 const year = document.getElementById("year");
 if (year) year.textContent = new Date().getFullYear();
 
+// Keep the decorative planet centered in the service-area diagram.
+const mainPin = document.querySelector(".pin-main");
+if (mainPin) {
+  mainPin.style.left = "50%";
+  mainPin.style.top = "50%";
+  mainPin.style.transform = "translate(-50%, -50%)";
+}
+
 // The decorative mark is not needed in the hero card.
 document.querySelector(".stamp-mark")?.remove();
 
