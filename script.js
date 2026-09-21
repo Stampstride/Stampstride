@@ -36,7 +36,17 @@ if (phoneField) {
   phoneField.pattern = "^$|\\([0-9]{3}\\)-[0-9]{3}-[0-9]{4}$";
 
 phoneField.addEventListener("input", event => {
-  const digits = event.target.value.replace(/\D/g, "").slice(0, 10);
+  const input = event.target;
+  const oldValue = input.value;
+  const oldCursor = input.selectionStart;
+
+  // Count how many digits were before the cursor
+  const digitsBeforeCursor = oldValue
+    .slice(0, oldCursor)
+    .replace(/\D/g, "").length;
+
+  // Remove everything except numbers and limit to 10 digits
+  const digits = oldValue.replace(/\D/g, "").slice(0, 10);
 
   let formatted = "";
 
@@ -56,7 +66,21 @@ phoneField.addEventListener("input", event => {
     formatted += `-${digits.slice(6, 10)}`;
   }
 
-  event.target.value = formatted;
+  input.value = formatted;
+
+  // Find the new cursor position corresponding to the same digit
+  let newCursor = 0;
+  let digitCount = 0;
+
+  while (newCursor < formatted.length && digitCount < digitsBeforeCursor) {
+    if (/\d/.test(formatted[newCursor])) {
+      digitCount++;
+    }
+    newCursor++;
+  }
+
+  // Put the cursor back in the correct position
+  input.setSelectionRange(newCursor, newCursor);
 });
 }
 
