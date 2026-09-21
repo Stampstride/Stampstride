@@ -1,0 +1,9 @@
+/* Mobile service-area diagram sizing */
+@media (max-width: 700px) {
+  .area-visual {
+    min-height: 387px;
+    transform: scale(.9);
+    transform-origin: top center;
+    margin-bottom: -43px;
+  }
+}
