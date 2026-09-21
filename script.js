@@ -24,45 +24,18 @@ if (dateField) {
   dateField.min = new Date().toISOString().split("T")[0];
 }
 
-const timeField = document.querySelector('input[name="preferred_time"]');
-if (timeField) {
-  timeField.type = "time";
-  timeField.step = 900;
-  timeField.removeAttribute("placeholder");
-}
-
-const phoneField = document.querySelector('input[name="phone"]');
-if (phoneField) {
-  phoneField.required = false;
-  phoneField.removeAttribute("required");
-  phoneField.maxLength = 14;
-  phoneField.inputMode = "numeric";
-  phoneField.autocomplete = "tel";
-  phoneField.placeholder = "(000)-000-0000";
-  phoneField.pattern = "^$|\\([0-9]{3}\\)-[0-9]{3}-[0-9]{4}$";
-
-  const formatPhoneNumber = digits => {
-    digits = digits.replace(/\D/g, "").slice(0, 10);
-    if (!digits) return "";
-    if (digits.length <= 3) return `(${digits}`;
-    if (digits.length <= 6) return `(${digits.slice(0, 3)})-${digits.slice(3)}`;
-    return `(${digits.slice(0, 3)})-${digits.slice(3, 6)}-${digits.slice(6)}`;
-  };
-
-  phoneField.addEventListener("input", event => {
-    const input = event.target;
-    input.value = formatPhoneNumber(input.value);
-    input.setSelectionRange(input.value.length, input.value.length);
-  });
-}
-
 const form = document.querySelector(".quote-form");
 const status = document.querySelector(".form-status");
 
 if (form) {
-  form.action = "https://formspree.io/f/xvkgakow";
+  form.addEventListener("submit", async (event) => {
+    if (!form.action.includes("formspree.io") || form.action.includes("YOUR_FORMSPREE_FORM_ID")) {
+      event.preventDefault();
+      status.textContent = "The form is not connected yet. Replace YOUR_FORMSPREE_FORM_ID with your Formspree form ID.";
+      status.style.color = "#9b4c36";
+      return;
+    }
 
-  form.addEventListener("submit", async event => {
     event.preventDefault();
     const button = form.querySelector("button[type='submit']");
     const original = button.innerHTML;
@@ -73,11 +46,14 @@ if (form) {
       const response = await fetch(form.action, {
         method: "POST",
         body: new FormData(form),
-        headers: { Accept: "application/json" }
+        headers: { "Accept": "application/json" }
       });
 
-      if (!response.ok) throw new Error("Form submission failed");
-      window.location.href = "thank-you.html";
+      if (response.ok) {
+        window.location.href = "thank-you.html";
+      } else {
+        throw new Error("Form submission failed");
+      }
     } catch (error) {
       status.textContent = "We couldn't send the request. Please email inquiries@stampstride.com directly.";
       status.style.color = "#9b4c36";
