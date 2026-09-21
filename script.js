@@ -17,7 +17,11 @@ document.querySelectorAll(".mobile-nav a").forEach(link => {
   });
 });
 
-document.getElementById("year").textContent = new Date().getFullYear();
+const year = document.getElementById("year");
+if (year) year.textContent = new Date().getFullYear();
+
+// The decorative mark is not needed in the hero card.
+document.querySelector(".stamp-mark")?.remove();
 
 const dateField = document.querySelector('input[name="preferred_date"]');
 if (dateField) {
@@ -28,7 +32,8 @@ const timeField = document.querySelector('input[name="preferred_time"]');
 if (timeField) {
   const picker = document.createElement("div");
   picker.className = "preferred-time-picker";
-  picker.setAttribute("aria-label", "Preferred time picker");
+  picker.setAttribute("role", "group");
+  picker.setAttribute("aria-label", "Preferred time");
 
   const createSelect = (part, label, options) => {
     const select = document.createElement("select");
@@ -43,10 +48,19 @@ if (timeField) {
     return select;
   };
 
-  const hours = ["12", ...Array.from({ length: 11 }, (_, index) => String(index + 1))];
-  const hourSelect = createSelect("hour", "Hour", hours.map(hour => [hour, hour]));
-  const minuteSelect = createSelect("minute", "Minutes", ["00", "15", "30", "45"].map(minute => [minute, minute]));
-  const periodSelect = createSelect("period", "AM or PM", [["AM", "AM"], ["PM", "PM"]]);
+  const hours = Array.from({ length: 12 }, (_, index) => {
+    const hour = String(index + 1);
+    return [hour, hour];
+  });
+  const minutes = Array.from({ length: 60 }, (_, index) => {
+    const minute = String(index).padStart(2, "0");
+    return [minute, minute];
+  });
+  const periods = [["AM", "AM"], ["PM", "PM"]];
+
+  const hourSelect = createSelect("hour", "Hour", hours);
+  const minuteSelect = createSelect("minute", "Minute", minutes);
+  const periodSelect = createSelect("period", "AM or PM", periods);
   const separator = document.createElement("span");
   separator.textContent = ":";
   separator.setAttribute("aria-hidden", "true");
@@ -54,7 +68,6 @@ if (timeField) {
   const hiddenTime = document.createElement("input");
   hiddenTime.type = "hidden";
   hiddenTime.name = "preferred_time";
-  hiddenTime.value = "12:00 AM";
 
   const syncTime = () => {
     hiddenTime.value = `${hourSelect.value}:${minuteSelect.value} ${periodSelect.value}`;
@@ -63,6 +76,7 @@ if (timeField) {
   [hourSelect, minuteSelect, periodSelect].forEach(select => {
     select.addEventListener("change", syncTime);
   });
+  syncTime();
 
   picker.append(hourSelect, separator, minuteSelect, periodSelect, hiddenTime);
   timeField.replaceWith(picker);
@@ -70,35 +84,37 @@ if (timeField) {
 
 const phoneField = document.querySelector('input[name="phone"]');
 if (phoneField) {
-  phoneField.required = false;
-  phoneField.removeAttribute("required");
   phoneField.maxLength = 14;
   phoneField.inputMode = "numeric";
   phoneField.autocomplete = "tel";
   phoneField.placeholder = "(000)-000-0000";
-  phoneField.pattern = "^$|^\\(\\d{3}\\)-\\d{3}-\\d{4}$";
+  phoneField.pattern = "^\\(\\d{3}\\)-\\d{3}-\\d{4}$";
+
+  const formatPhoneNumber = digits => {
+    if (digits.length <= 3) return digits ? `(${digits}` : "";
+    if (digits.length <= 6) return `(${digits.slice(0, 3)})-${digits.slice(3)}`;
+    return `(${digits.slice(0, 3)})-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  };
 
   phoneField.addEventListener("input", event => {
-    const digits = (event.target.value || "").replace(/\D/g, "").slice(0, 10);
+    const input = event.target;
+    const cursor = input.selectionStart ?? input.value.length;
+    const digitsBeforeCursor = input.value.slice(0, cursor).replace(/\D/g, "").length;
+    const digits = input.value.replace(/\D/g, "").slice(0, 10);
+    const formatted = formatPhoneNumber(digits);
 
-    if (!digits.length) {
-      event.target.value = "";
-      return;
+    input.value = formatted;
+
+    // Keep the caret beside the same digit so edits and backspace work naturally.
+    if (document.activeElement === input) {
+      let position = 0;
+      let digitCount = 0;
+      while (position < formatted.length && digitCount < digitsBeforeCursor) {
+        if (/\d/.test(formatted[position])) digitCount++;
+        position++;
+      }
+      input.setSelectionRange(position, position);
     }
-
-    if (digits.length <= 3) {
-      event.target.value = `(${digits}`;
-      return;
-    }
-
-    if (digits.length <= 6) {
-      const tail = digits.slice(3);
-      event.target.value = `(${digits.slice(0, 3)})-${tail}`;
-      if (digits.length === 6) event.target.value += "-";
-      return;
-    }
-
-    event.target.value = `(${digits.slice(0, 3)})-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
   });
 }
 
@@ -125,8 +141,10 @@ if (form) {
       if (!response.ok) throw new Error("Form submission failed");
       window.location.href = "thank-you.html";
     } catch (error) {
-      status.textContent = "We couldn't send the request. Please email inquiries@stampstride.com directly.";
-      status.style.color = "#9b4c36";
+      if (status) {
+        status.textContent = "We couldn't send the request. Please email inquiries@stampstride.com directly.";
+        status.style.color = "#9b4c36";
+      }
       button.disabled = false;
       button.innerHTML = original;
     }

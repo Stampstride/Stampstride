@@ -27,7 +27,7 @@ img{max-width:100%;display:block}
 .menu-toggle span{display:block;width:25px;height:2px;background:var(--navy);margin:5px}
 .mobile-nav{display:none}
 .hero{position:relative;overflow:hidden;background:var(--navy);color:#fff;padding:90px 0 92px}
-.hero-texture{position:absolute;inset:0;opacity:.12;background-image:linear-gradient(120deg,transparent 0 40%,#fff 40.2%,transparent 40.4%),linear-gradient(60deg,transparent 0 65%,#fff 65.2%,transparent 65.4%);background-size:280px 280px}
+.hero-texture{position:absolute;inset:0;opacity:.12;background-image:linear-gradient(120deg,transparent 0 40%,#fff 40.2%,transparent 40.4%),linear-gradient(60deg,transparent 0 65%,#fff 65.2%,transparent 65.4%)}
 .hero-grid{position:relative;display:grid;grid-template-columns:1.25fr .75fr;gap:70px;align-items:center}
 .eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--accent);margin:0 0 18px}
 .hero h1,.section-heading h2,.area-panel h2,.about-grid h2,.quote-intro h2{font-family:"Libre Baskerville",Georgia,serif;line-height:1.16;letter-spacing:-.03em}
@@ -76,13 +76,13 @@ img{max-width:100%;display:block}
 .area-list span{border:1px solid rgba(255,255,255,.2);padding:9px 12px;font-size:12px;color:#d8e2e7}
 .small-note{font-size:12px!important;color:#9fb0b9!important}
 .area-visual{position:relative;overflow:hidden;background:#102d41;min-height:590px}
-.area-visual:before{content:"";position:absolute;inset:-20%;background:linear-gradient(25deg,transparent 49%,rgba(255,255,255,.07) 49.3%,transparent 49.7%),linear-gradient(145deg,transparent 48%,rgba(255,255,255,.06) 48.4%,transparent 48.8%);background-size:180px 140px;transform:rotate(-10deg)}
+.area-visual:before{content:"";position:absolute;inset:-20%;background:linear-gradient(25deg,transparent 49%,rgba(255,255,255,.07) 49.3%,transparent 49.7%),linear-gradient(145deg,transparent 48%,rgba(255,255,255,.05) 48.3%,transparent 48.7%);transform:rotate(8deg)}
 .route{position:absolute;border:2px dashed rgba(197,164,93,.6);border-radius:50%;transform:rotate(-20deg)}
 .route-one{width:380px;height:180px;left:90px;top:150px}
 .route-two{width:300px;height:380px;left:180px;top:110px}
 .route-three{width:460px;height:300px;left:20px;top:220px}
 .map-pin{position:absolute;width:16px;height:16px;border-radius:50%;background:#e4c77d;box-shadow:0 0 0 7px rgba(228,199,125,.12)}
-.pin-main{width:58px;height:58px;display:grid;place-items:center;font-size:12px;font-weight:700;border:2px solid #e4c77d;background:var(--navy);color:#e4c77d;box-shadow:0 0 0 10px rgba(228,199,125,.10);left:49%;top:46%}
+.pin-main{width:58px;height:58px;display:grid;place-items:center;font-size:12px;font-weight:700;border:2px solid #e4c77d;background:var(--navy);color:#e4c77d;box-shadow:0 0 0 10px rgba(228,199,125,.08)}
 .pin-one{left:24%;top:27%}.pin-two{right:19%;top:28%}.pin-three{right:22%;bottom:18%}
 .map-label{position:absolute;left:51%;top:58%;font-family:"Libre Baskerville",Georgia,serif;font-size:21px;line-height:1.2;color:#fff}
 .map-label small{font-family:"DM Sans",sans-serif;font-size:9px;letter-spacing:.16em;color:#9fb0b9}
@@ -106,9 +106,12 @@ img{max-width:100%;display:block}
 .quote-form label{display:block;margin-bottom:17px}
 .quote-form label>span{display:block;font-size:12px;font-weight:700;color:#42545e;margin-bottom:7px}
 .quote-form b{color:#a46c35}
-.quote-form input,.quote-form textarea{width:100%;font:14px "DM Sans",sans-serif;color:var(--ink);background:#fbfbfa;border:1px solid #ccd4d5;border-radius:2px;padding:12px 13px;outline:none}
+.quote-form input,.quote-form select,.quote-form textarea{width:100%;font:14px "DM Sans",sans-serif;color:var(--ink);background:#fbfbfa;border:1px solid #ccd4d5;border-radius:2px;padding:12px 13px;outline:none}
 .quote-form textarea{resize:vertical;min-height:125px}
-.quote-form input:focus,.quote-form textarea:focus{border-color:#7b929e;box-shadow:0 0 0 3px rgba(13,38,56,.06)}
+.quote-form input:focus,.quote-form select:focus,.quote-form textarea:focus{border-color:#7b929e;box-shadow:0 0 0 3px rgba(13,38,56,.06)}
+.preferred-time-picker{display:flex;align-items:center;gap:8px}
+.preferred-time-picker select{flex:1;min-width:0}
+.preferred-time-picker span{font-weight:700;color:var(--muted)}
 .check-label{display:flex!important;gap:10px;align-items:flex-start}
 .check-label input{width:17px;margin-top:3px;flex:0 0 auto}
 .check-label span{font-size:12px!important;font-weight:500!important;color:#68767d!important}
