@@ -24,6 +24,31 @@ if (dateField) {
   dateField.min = new Date().toISOString().split("T")[0];
 }
 
+const phoneField = document.querySelector('input[name="phone"]');
+if (phoneField) {
+  // Phone is optional, but when provided it must use (000)-000-0000.
+  phoneField.required = false;
+  phoneField.removeAttribute("required");
+  phoneField.maxLength = 14;
+  phoneField.inputMode = "numeric";
+  phoneField.autocomplete = "tel";
+  phoneField.placeholder = "(000)-000-0000";
+  phoneField.pattern = "^$|\\([0-9]{3}\\)-[0-9]{3}-[0-9]{4}";
+
+  phoneField.addEventListener("input", event => {
+    const digits = event.target.value.replace(/\\D/g, "").slice(0, 10);
+    let formatted = "";
+
+    if (digits.length > 0) formatted = `(${digits.slice(0, 3)}`;
+    if (digits.length >= 3) formatted += ")-";
+    if (digits.length > 3) formatted += digits.slice(3, 6);
+    if (digits.length >= 6) formatted += "-";
+    if (digits.length > 6) formatted += digits.slice(6, 10);
+
+    event.target.value = formatted;
+  });
+}
+
 const form = document.querySelector(".quote-form");
 const status = document.querySelector(".form-status");
 
