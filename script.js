@@ -53,17 +53,12 @@ const form = document.querySelector(".quote-form");
 const status = document.querySelector(".form-status");
 
 if (form) {
-  form.addEventListener("submit", async (event) => {
-    // Let Formspree handle the actual POST. This fallback only improves the
-    // experience if Formspree returns JSON rather than redirecting.
-    if (!form.action.includes("formspree.io") || form.action.includes("YOUR_FORMSPREE_FORM_ID")) {
-      event.preventDefault();
-      status.textContent = "The form is not connected yet. Replace YOUR_FORMSPREE_FORM_ID with your Formspree form ID.";
-      status.style.color = "#9b4c36";
-      return;
-    }
+  // Use the active Formspree endpoint supplied for this site.
+  form.action = "https://formspree.io/f/xvkgakow";
 
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
+
     const button = form.querySelector("button[type='submit']");
     const original = button.innerHTML;
     button.disabled = true;
